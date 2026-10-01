@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A custom CRM built for a two-person roofing and exteriors contractor in Kokomo, Indiana (Legacy Roofing & Exteriors) and a partner painting company. It replaced AccuLynx ($585/month) and DripJobs ($250/month), $835/month combined, with one self-hosted system on Azure (~$35-45/month).
+A custom CRM built for a two-person roofing and exteriors contractor in Kokomo, Indiana (Legacy Roofing & Exteriors) and a partner painting company. It was built to replace AccuLynx ($585/month) and DripJobs ($250/month), $835/month combined, with one self-hosted system on Azure (~$35-45/month).
 
 The users (owner Dale and operations lead Marcus in this copy; names are stand-ins) are contractors, not developers. The system must be simple, reliable, and match the workflows they already use. They will not troubleshoot technical issues. The developer (Ian) manages the system.
 
@@ -20,7 +20,7 @@ The users (owner Dale and operations lead Marcus in this copy; names are stand-i
 
 ## Tech Stack
 
-- **Backend:** Python 3.12, FastAPI, SQLAlchemy 2.x, Alembic (migrations)
+- **Backend:** Python 3.12 (3.13 also works), FastAPI, SQLAlchemy 2.x, Alembic (migrations)
 - **Database:** PostgreSQL 16
 - **Frontend:** React 18 (Vite), Tailwind CSS
 - **Auth:** JWT (python-jose + passlib)
@@ -159,7 +159,7 @@ Migration `0023` — adds `tax_included` BOOLEAN to estimates. All migrations ar
 
 ### Production Deploy
 ```bash
-./scripts/deploy.sh
+ACR_NAME=<registry> WEB_APP_NAME=<web-app> RESOURCE_GROUP=<resource-group> ./scripts/deploy.sh
 ```
 This runs: git push → Docker build with Dockerfile.prod → ACR login → push to registry → app restart.
 
@@ -175,7 +175,7 @@ Access at http://localhost:5173. Backend at http://localhost:8000.
 
 ### Database Backup
 ```bash
-./scripts/dump_prod_db.sh
+WEB_APP_NAME=<your-web-app> RESOURCE_GROUP=<your-resource-group> ./scripts/dump_prod_db.sh
 ```
 Pulls DATABASE_URL from Azure env vars at runtime.
 

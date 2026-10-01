@@ -1,9 +1,10 @@
 # Legacy CRM
 
-A CRM I built for a two-person roofing and exteriors company in Kokomo, Indiana. It replaced two
+A CRM I built for a two-person roofing and exteriors company in Kokomo, Indiana, to replace two
 subscriptions, AccuLynx and DripJobs, that cost the owner $835 a month and did not share data with
-each other. It was deployed on Azure with the business's real data from April to August 2026.
-The owner did not end up running his business on it, and the case study is honest about why.
+each other. It was deployed on Azure with the business's real data from April to August 2026, then
+taken down to stop the hosting bill while the owner decides. A backup can bring it back. He has not
+run his business on it yet, and the case study is honest about why.
 
 The case study, with the business side of the story, is at
 [iantitus.com/work/legacy-crm](https://iantitus.com/work/legacy-crm).
@@ -32,7 +33,8 @@ payment). Each card says what a piece of the system is, where it lives in the co
 moves if you change it. A cold agent can answer "what breaks if I touch invoices" in two files
 instead of reading the whole codebase.
 
-**Run the tests.** There are 952 automated tests.
+**Run the tests.** There are 952 automated tests. They take about 7 minutes. You need Python 3.12
+or 3.13.
 
 ```bash
 cd backend
@@ -115,6 +117,6 @@ changed, and which part of the map describes it now.
 
 ## Stack
 
-Python 3.12, FastAPI, SQLAlchemy 2, Alembic, PostgreSQL 16, React 18, Vite, Tailwind CSS,
+Python 3.12 or 3.13, FastAPI, SQLAlchemy 2, Alembic, PostgreSQL 16, React 18, Vite, Tailwind CSS,
 WeasyPrint for PDFs, Twilio for SMS, Docker. Production ran on Azure App Service with Azure
 Database for PostgreSQL.

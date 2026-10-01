@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Azure Container Registry
-ACR_LOGIN_SERVER="<your-registry>.azurecr.io"
+ACR_LOGIN_SERVER="${ACR_LOGIN_SERVER:?Set ACR_LOGIN_SERVER, e.g. myregistry.azurecr.io}"
 IMAGE_NAME="legacy-crm"
 TAG="${1:-latest}"
 

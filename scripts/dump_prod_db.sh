@@ -3,7 +3,7 @@
 # Dump the Legacy CRM production PostgreSQL database to a local file.
 #
 # Usage:
-#   ./scripts/dump_prod_db.sh
+#   WEB_APP_NAME=<your-web-app> RESOURCE_GROUP=<your-resource-group> ./scripts/dump_prod_db.sh
 #
 # Requirements:
 #   - Azure CLI logged in (az login)
@@ -24,8 +24,8 @@
 #
 set -euo pipefail
 
-WEB_APP_NAME="legacy-crm"
-RESOURCE_GROUP="legacy-crm-prod"
+WEB_APP_NAME="${WEB_APP_NAME:?Set WEB_APP_NAME to your Azure web app name}"
+RESOURCE_GROUP="${RESOURCE_GROUP:?Set RESOURCE_GROUP to your Azure resource group}"
 BACKUP_DIR="$(dirname "$0")/../db_backups"
 TIMESTAMP="$(date -u +%Y%m%d_%H%M%S)"
 OUTFILE="${BACKUP_DIR}/legacy_crm_${TIMESTAMP}.sql"
