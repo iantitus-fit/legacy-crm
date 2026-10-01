@@ -1,0 +1,17 @@
+# Keep client PII exports out of the production image.
+# AccuLynx / DripJobs CSV exports are imported via a script that
+# reads them off the host (or runtime tmp) — never bake them in.
+data/Contacts Report*.csv
+data/Jobs Report*.csv
+
+# Standard cruft we don't need in the build context either
+.git
+__pycache__
+*.pyc
+.pytest_cache
+node_modules
+frontend/node_modules
+frontend/dist
+.venv
+.env
+db_backups

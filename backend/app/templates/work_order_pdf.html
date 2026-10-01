@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{{ wo_number }} — {{ estimate_name }}</title>
+<style>
+    @page { size: letter; margin: 0.75in; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 11pt; color: #1a1a1a; line-height: 1.5; background: #fff;
+        max-width: 8.5in; margin: 0 auto; padding: 0.75in;
+    }
+    .header {
+        display: flex; justify-content: space-between; align-items: flex-start;
+        padding-bottom: 16px; border-bottom: 2px solid #1a1a1a; margin-bottom: 20px;
+    }
+    .header-logo img { max-width: 200px; height: auto; }
+    .header-company { text-align: right; font-size: 10pt; color: #444; }
+    .header-company .company-name {
+        font-size: 14pt; font-weight: 700; color: #1a1a1a; margin-bottom: 4px;
+    }
+    .info-bar {
+        display: flex; justify-content: space-between; align-items: center;
+        background: #f5f5f5; padding: 10px 16px; margin-bottom: 20px; border-radius: 4px;
+    }
+    .info-bar .wo-label { font-size: 13pt; font-weight: 600; }
+    .info-bar .wo-date { font-size: 10pt; color: #555; }
+    .info-bar .wo-badge {
+        background: {% if secret %}#7c1d1d{% else %}#1a1a1a{% endif %};
+        color: #fff; padding: 3px 12px; border-radius: 3px;
+        font-size: 9pt; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+    }
+    .meta-block { margin-bottom: 24px; }
+    .meta-block .label {
+        font-size: 9pt; color: #888; text-transform: uppercase;
+        letter-spacing: 0.5px; margin-bottom: 4px;
+    }
+    .meta-block .name { font-size: 13pt; font-weight: 600; }
+    .meta-block .line { font-size: 10pt; color: #444; }
+    .secret-banner {
+        background: #fff4e5; border: 1px solid #ffb84d; color: #6a3a00;
+        padding: 8px 12px; border-radius: 4px; font-size: 9pt; margin-bottom: 16px;
+    }
+    .scope { margin-bottom: 24px; }
+    .scope p { font-size: 10pt; color: #444; line-height: 1.6; }
+    .section-header {
+        font-size: 13pt; font-weight: 700; margin-top: 24px; margin-bottom: 4px;
+        padding-bottom: 4px; border-bottom: 1px solid #ddd;
+    }
+    .section-description {
+        font-size: 10pt; color: #444; margin-bottom: 10px; line-height: 1.6;
+    }
+    table.items {
+        width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 10pt;
+    }
+    table.items thead th {
+        background: #f5f5f5; padding: 6px 10px; text-align: left;
+        font-weight: 600; font-size: 9pt; text-transform: uppercase;
+        letter-spacing: 0.3px; color: #555; border-bottom: 1px solid #ddd;
+    }
+    table.items thead th.num { text-align: right; width: 80px; }
+    table.items tbody td {
+        padding: 6px 10px; border-bottom: 1px solid #eee; vertical-align: top;
+    }
+    table.items tbody td.num { text-align: right; white-space: nowrap; }
+    table.items .item-body {
+        font-size: 9pt; color: #666; margin-top: 2px; line-height: 1.4;
+    }
+    .ql-size-small { font-size: 0.75em; }
+    .ql-size-large { font-size: 1.5em; }
+    .ql-size-huge { font-size: 2em; }
+    .photos-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;
+    }
+    .photo-card {
+        border: 1px solid #ddd; border-radius: 4px; overflow: hidden;
+        page-break-inside: avoid;
+    }
+    .photo-card img {
+        width: 100%; height: 240px; object-fit: cover; display: block;
+    }
+    .photo-card .caption {
+        font-size: 9pt; color: #555; padding: 6px 8px; background: #fafafa;
+    }
+    .notes-section {
+        margin-top: 30px; padding-top: 16px; border-top: 1px solid #ddd;
+    }
+    .notes-section h3 { font-size: 12pt; font-weight: 700; margin-bottom: 8px; }
+    .note-item {
+        font-size: 10pt; color: #444; margin-bottom: 8px; line-height: 1.6;
+        border-left: 3px solid #ccc; padding-left: 10px;
+    }
+    .note-item .meta {
+        font-size: 8pt; color: #888; text-transform: uppercase;
+        letter-spacing: 0.5px; margin-bottom: 2px;
+    }
+    .footer {
+        margin-top: 40px; text-align: center; font-size: 9pt;
+        color: #888; padding-top: 12px; border-top: 1px solid #eee;
+    }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-logo">
+        {% if logo_data_uri %}<img src="{{ logo_data_uri }}" alt="{{ company_name }}">{% endif %}
+    </div>
+    <div class="header-company">
+        <div class="company-name">{{ company_name }}</div>
+        <div>{{ company_address }}</div>
+        <div>{{ company_phone }}</div>
+        <div>{{ company_email }}</div>
+    </div>
+</div>
+
+<div class="info-bar">
+    <div>
+        <span class="wo-label">Work Order {{ wo_number }}</span>
+        {% if created_at %}
+        <span class="wo-date">&nbsp;&mdash;&nbsp;{{ created_at.strftime('%B %d, %Y') }}</span>
+        {% endif %}
+    </div>
+    <div>
+        <span class="wo-badge">{% if secret %}Secret Work Order{% else %}Work Order{% endif %}</span>
+    </div>
+</div>
+
+{% if secret %}
+<div class="secret-banner">
+    Customer contact info redacted. This document is for the crew/subcontractor only.
+</div>
+{% endif %}
+
+{% if customer and customer.name %}
+<div class="meta-block">
+    <div class="label">Customer</div>
+    <div class="name">{{ customer.name }}</div>
+    {% if customer.phone %}<div class="line">{{ customer.phone }}</div>{% endif %}
+    {% if customer.email %}<div class="line">{{ customer.email }}</div>{% endif %}
+</div>
+{% endif %}
+
+{% if job_address %}
+<div class="meta-block">
+    <div class="label">Job Address</div>
+    <div class="line">{{ job_address }}</div>
+</div>
+{% endif %}
+
+{% if scheduled_start or crew_name %}
+<div class="meta-block">
+    {% if crew_name %}<div class="line"><strong>Crew:</strong> {{ crew_name }}</div>{% endif %}
+    {% if scheduled_start %}
+    <div class="line">
+        <strong>Scheduled:</strong> {{ scheduled_start.strftime('%B %d, %Y') }}
+        {% if scheduled_end and scheduled_end != scheduled_start %}
+            &ndash; {{ scheduled_end.strftime('%B %d, %Y') }}
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+{% if scope_of_work %}
+<div class="scope">
+    <div class="meta-block">
+        <div class="label">Scope of Work</div>
+    </div>
+    <p>{{ scope_of_work }}</p>
+</div>
+{% endif %}
+
+{% for section in sections %}
+<div class="section-header">{{ section.name }}</div>
+{% if section.description %}
+<div class="section-description">{{ section.description | safe }}</div>
+{% endif %}
+{% if section.line_items %}
+<table class="items">
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th class="num">Qty</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in section.line_items %}
+        <tr>
+            <td>
+                {{ item.description or '' }}
+                {% if item.body %}<div class="item-body">{{ item.body | safe }}</div>{% endif %}
+            </td>
+            <td class="num">{% if item.qty is not none %}{% if item.qty | float == item.qty | float | int %}{{ item.qty | float | int }}{% else %}{{ item.qty }}{% endif %}{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endfor %}
+
+{% if unsectioned_items %}
+{% if sections %}<div class="section-header">Other Items</div>{% endif %}
+<table class="items">
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th class="num">Qty</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in unsectioned_items %}
+        <tr>
+            <td>
+                {{ item.description or '' }}
+                {% if item.body %}<div class="item-body">{{ item.body | safe }}</div>{% endif %}
+            </td>
+            <td class="num">{% if item.qty is not none %}{% if item.qty | float == item.qty | float | int %}{{ item.qty | float | int }}{% else %}{{ item.qty }}{% endif %}{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if photos %}
+<div class="section-header">Photos</div>
+<div class="photos-grid">
+    {% for photo in photos %}
+    <div class="photo-card">
+        <img src="{{ photo.data_uri }}" alt="{{ photo.caption }}">
+        {% if photo.caption %}<div class="caption">{{ photo.caption }}</div>{% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if crew_notes %}
+<div class="notes-section">
+    <h3>Crew Notes</h3>
+    {% for note in crew_notes %}
+    <div class="note-item">
+        <div class="meta">{{ note.note_type }}</div>
+        {{ note.content }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="footer">
+    <div>{{ company_name }} &middot; {{ wo_number }}</div>
+</div>
+
+</body>
+</html>

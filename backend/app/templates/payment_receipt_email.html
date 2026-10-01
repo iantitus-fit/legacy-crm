@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#1a1a1a; background:#f9f9f9;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f9f9f9; padding:24px 0;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:8px; overflow:hidden;">
+    <tr>
+        <td style="padding:32px 40px 24px 40px;">
+            <p style="font-size:16px; line-height:1.6; margin:0 0 16px 0;">
+                Dear {{ contact_name or 'Customer' }},
+            </p>
+            <p style="font-size:15px; line-height:1.6; margin:0 0 20px 0; color:#333;">
+                {% if message %}{{ message }}{% else %}Thank you for your payment. Here is your receipt.{% endif %}
+            </p>
+
+            <!-- Payment Details -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5; border-radius:6px; margin:0 0 20px 0;">
+                <tr>
+                    <td style="padding:20px;">
+                        <p style="font-size:13px; color:#888; margin:0 0 8px 0; text-transform:uppercase; letter-spacing:0.5px;">Payment Receipt</p>
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td style="padding:4px 0; font-size:14px; color:#555; width:120px;">Date</td>
+                                <td style="padding:4px 0; font-size:14px; font-weight:500; color:#1a1a1a;">{{ payment_date.strftime('%B %d, %Y') if payment_date else '' }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:4px 0; font-size:14px; color:#555;">Amount</td>
+                                <td style="padding:4px 0; font-size:18px; font-weight:700; color:#16a34a;">${{ "{:,.2f}".format(payment_amount | float) }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:4px 0; font-size:14px; color:#555;">Method</td>
+                                <td style="padding:4px 0; font-size:14px; font-weight:500; color:#1a1a1a;">{{ payment_method | replace('_', ' ') | title }}</td>
+                            </tr>
+                            {% if payment_reference %}
+                            <tr>
+                                <td style="padding:4px 0; font-size:14px; color:#555;">Reference</td>
+                                <td style="padding:4px 0; font-size:14px; color:#1a1a1a;">{{ payment_reference }}</td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Invoice Summary -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #eee; border-radius:6px; margin:0 0 20px 0;">
+                <tr>
+                    <td style="padding:16px 20px;">
+                        <p style="font-size:13px; color:#888; margin:0 0 8px 0; text-transform:uppercase; letter-spacing:0.5px;">Invoice Summary</p>
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td style="padding:3px 0; font-size:14px; color:#555;">Invoice</td>
+                                <td style="padding:3px 0; font-size:14px; font-weight:500; color:#1a1a1a; text-align:right;">{{ invoice_number }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:3px 0; font-size:14px; color:#555;">Invoice Total</td>
+                                <td style="padding:3px 0; font-size:14px; color:#1a1a1a; text-align:right;">${{ "{:,.2f}".format(invoice_total | float) }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:3px 0; font-size:14px; color:#555;">Total Paid</td>
+                                <td style="padding:3px 0; font-size:14px; color:#1a1a1a; text-align:right;">${{ "{:,.2f}".format(amount_paid | float) }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:6px 0 0 0; font-size:14px; font-weight:600; color:#1a1a1a; border-top:1px solid #eee;">Balance Due</td>
+                                <td style="padding:6px 0 0 0; font-size:14px; font-weight:600; text-align:right; border-top:1px solid #eee; color:{% if balance | float <= 0 %}#16a34a{% else %}#b45309{% endif %};">${{ "{:,.2f}".format(balance | float) }}</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+            <p style="font-size:15px; line-height:1.6; margin:0; color:#333;">
+                If you have any questions about this payment, please don't hesitate to contact us.
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding:20px 40px 32px 40px; border-top:1px solid #eee;">
+            <p style="font-size:14px; font-weight:600; margin:0 0 4px 0; color:#1a1a1a;">{{ company_name }}</p>
+            <p style="font-size:13px; margin:0; color:#666;">{{ company_phone }} &nbsp;&middot;&nbsp; {{ company_email }}</p>
+        </td>
+    </tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>

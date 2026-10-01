@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Change Order #{{ co_number }} - {{ estimate_name }}</title>
+<style>
+    @page {
+        size: letter;
+        margin: 0.75in;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 11pt;
+    color: #1a1a1a;
+    line-height: 1.5;
+    background: #fff;
+    max-width: 8.5in;
+    margin: 0 auto;
+    padding: 0.75in;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding-bottom: 16px;
+        border-bottom: 2px solid #1a1a1a;
+        margin-bottom: 20px;
+    }
+
+    .header-logo img {
+        max-width: 200px;
+        height: auto;
+    }
+
+    .header-company {
+        text-align: right;
+        font-size: 10pt;
+        color: #444;
+    }
+
+    .header-company .company-name {
+        font-size: 14pt;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 4px;
+    }
+
+    .info-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f5f5f5;
+        padding: 10px 16px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+    }
+
+    .info-bar .co-label {
+        font-size: 13pt;
+        font-weight: 600;
+    }
+
+    .info-bar .co-date {
+        font-size: 10pt;
+        color: #555;
+    }
+
+    .info-bar .co-badge {
+        background: #f59e0b;
+        color: #1a1a1a;
+        padding: 3px 12px;
+        border-radius: 3px;
+        font-size: 9pt;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .customer-block {
+        margin-bottom: 24px;
+    }
+
+    .customer-block .label {
+        font-size: 9pt;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    .customer-block .name {
+        font-size: 13pt;
+        font-weight: 600;
+    }
+
+    .customer-block .address {
+        font-size: 10pt;
+        color: #444;
+    }
+
+    .estimate-ref {
+        font-size: 10pt;
+        color: #555;
+        margin-bottom: 16px;
+    }
+
+    .estimate-ref strong {
+        color: #1a1a1a;
+    }
+
+    .co-name {
+        font-size: 12pt;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: #333;
+    }
+
+    table.items {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 8px;
+        font-size: 10pt;
+    }
+
+    table.items thead th {
+        background: #f5f5f5;
+        padding: 6px 10px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 9pt;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        color: #555;
+        border-bottom: 1px solid #ddd;
+    }
+
+    table.items thead th.num {
+        text-align: right;
+    }
+
+    table.items tbody td {
+        padding: 6px 10px;
+        border-bottom: 1px solid #eee;
+        vertical-align: top;
+    }
+
+    table.items tbody td.num {
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    table.items .item-body {
+        font-size: 9pt;
+        color: #666;
+        margin-top: 2px;
+        line-height: 1.4;
+    }
+
+    .ql-size-small { font-size: 0.75em; }
+    .ql-size-large { font-size: 1.5em; }
+    .ql-size-huge { font-size: 2em; }
+
+    .totals-block {
+        margin-top: 24px;
+        margin-left: auto;
+        width: 280px;
+    }
+
+    .totals-block table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .totals-block td {
+        padding: 5px 10px;
+        font-size: 10pt;
+    }
+
+    .totals-block td.label {
+        text-align: left;
+        color: #555;
+    }
+
+    .totals-block td.value {
+        text-align: right;
+        font-weight: 500;
+    }
+
+    .totals-block .total-row td {
+        font-size: 13pt;
+        font-weight: 700;
+        border-top: 2px solid #1a1a1a;
+        padding-top: 8px;
+        color: #1a1a1a;
+    }
+
+    .signature-block {
+        margin-top: 40px;
+        display: flex;
+        justify-content: space-between;
+        gap: 40px;
+    }
+
+    .signature-line {
+        flex: 1;
+    }
+
+    .signature-line .sig-label {
+        font-size: 9pt;
+        color: #555;
+        margin-bottom: 24px;
+    }
+
+    .signature-line .sig-rule {
+        border-bottom: 1px solid #1a1a1a;
+        margin-bottom: 4px;
+    }
+
+    .signature-line .sig-fields {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .signature-line .sig-fields .field {
+        flex: 1;
+    }
+
+    .signature-line .sig-fields .field.date-field {
+        flex: 0 0 120px;
+    }
+
+    .signature-line .sig-fields .field-label {
+        font-size: 8pt;
+        color: #888;
+    }
+
+    .footer {
+        margin-top: 40px;
+        text-align: center;
+        font-size: 9pt;
+        color: #888;
+        padding-top: 12px;
+        border-top: 1px solid #eee;
+    }
+
+    .footer .thanks {
+        font-size: 10pt;
+        color: #555;
+        margin-bottom: 4px;
+    }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="header-logo">
+        {% if logo_data_uri %}
+        <img src="{{ logo_data_uri }}" alt="{{ company_name }}">
+        {% endif %}
+    </div>
+    <div class="header-company">
+        <div class="company-name">{{ company_name }}</div>
+        <div>{{ company_address }}</div>
+        <div>{{ company_phone }}</div>
+        <div>{{ company_email }}</div>
+    </div>
+</div>
+
+<!-- CO INFO BAR -->
+<div class="info-bar">
+    <div>
+        <span class="co-label">Change Order #{{ co_number }}</span>
+        {% if created_at %}
+        <span class="co-date">&nbsp;&mdash;&nbsp;{{ created_at.strftime('%B %d, %Y') }}</span>
+        {% endif %}
+    </div>
+    <div>
+        <span class="co-badge">Change Order</span>
+    </div>
+</div>
+
+<!-- CUSTOMER BLOCK -->
+<div class="customer-block">
+    <div class="label">Prepared For</div>
+    {% if contact_name %}
+    <div class="name">{{ contact_name }}</div>
+    {% endif %}
+    {% if job_address %}
+    <div class="address">{{ job_address }}</div>
+    {% endif %}
+</div>
+
+<!-- ESTIMATE REFERENCE -->
+<div class="estimate-ref">
+    Reference Estimate: <strong>{{ estimate_name }}</strong>
+</div>
+
+{% if co_name %}
+<div class="co-name">{{ co_name }}</div>
+{% endif %}
+
+<!-- LINE ITEMS -->
+{% if items %}
+<table class="items">
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th class="num">Qty</th>
+            <th class="num">Unit Price</th>
+            <th class="num">Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>
+                {{ item.description or '' }}
+                {% if item.body %}
+                <div class="item-body">{{ item.body | safe }}</div>
+                {% endif %}
+            </td>
+            <td class="num">{% if item.qty | float == item.qty | float | int %}{{ item.qty | float | int }}{% else %}{{ item.qty }}{% endif %}</td>
+            <td class="num">${{ "{:,.2f}".format(item.unit_price | float) }}</td>
+            <td class="num">${{ "{:,.2f}".format(item.line_total | float) }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+<!-- TOTALS -->
+<div class="totals-block">
+    <table>
+        <tr>
+            <td class="label">Subtotal</td>
+            <td class="value">${{ "{:,.2f}".format(subtotal | float) }}</td>
+        </tr>
+        {% if tax_rate and tax_rate > 0 %}
+        <tr>
+            <td class="label">Tax ({{ tax_rate_pct }}%)</td>
+            <td class="value">${{ "{:,.2f}".format(tax_amount | float) }}</td>
+        </tr>
+        {% endif %}
+        <tr class="total-row">
+            <td class="label">Total</td>
+            <td class="value">${{ "{:,.2f}".format(total | float) }}</td>
+        </tr>
+    </table>
+</div>
+
+<!-- SIGNATURE BLOCK -->
+<div class="signature-block">
+    <div class="signature-line">
+        <div class="sig-label">Company Representative</div>
+        <div class="sig-fields">
+            <div class="field">
+                <div class="sig-rule"></div>
+                <div class="field-label">Signature</div>
+            </div>
+            <div class="field date-field">
+                <div class="sig-rule"></div>
+                <div class="field-label">Date</div>
+            </div>
+        </div>
+    </div>
+    <div class="signature-line">
+        <div class="sig-label">Customer</div>
+        {% if signature_data %}
+        <div style="margin-bottom: 4px;">
+            <img src="{{ signature_data }}" style="max-width: 250px; max-height: 80px;" />
+        </div>
+        <div style="font-size: 10pt; color: #1a1a1a; font-weight: 500;">{{ signer_name }}</div>
+        <div style="font-size: 9pt; color: #888;">{{ signed_at.strftime('%B %d, %Y') if signed_at else '' }}</div>
+        {% else %}
+        <div class="sig-fields">
+            <div class="field">
+                <div class="sig-rule"></div>
+                <div class="field-label">Signature</div>
+            </div>
+            <div class="field date-field">
+                <div class="sig-rule"></div>
+                <div class="field-label">Date</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+    <div class="thanks">Thank you for your business.</div>
+    <div>{{ company_name }}</div>
+</div>
+
+</body>
+</html>

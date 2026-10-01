@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Invoice {{ invoice_number }}</title>
+<style>
+    @page {
+        size: letter;
+        margin: 0.75in;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 11pt;
+    color: #1a1a1a;
+    line-height: 1.5;
+    background: #fff;
+    max-width: 8.5in;
+    margin: 0 auto;
+    padding: 0.75in;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding-bottom: 16px;
+        border-bottom: 2px solid #1a1a1a;
+        margin-bottom: 20px;
+    }
+
+    .header-logo img {
+        max-width: 200px;
+        height: auto;
+    }
+
+    .header-company {
+        text-align: right;
+        font-size: 10pt;
+        color: #444;
+    }
+
+    .header-company .company-name {
+        font-size: 14pt;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 4px;
+    }
+
+    .info-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f5f5f5;
+        padding: 10px 16px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+    }
+
+    .info-bar .invoice-label {
+        font-size: 13pt;
+        font-weight: 600;
+    }
+
+    .info-bar .invoice-date {
+        font-size: 10pt;
+        color: #555;
+    }
+
+    .info-bar .invoice-badge {
+        background: #1a1a1a;
+        color: #fff;
+        padding: 3px 12px;
+        border-radius: 3px;
+        font-size: 9pt;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .details-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .customer-block {
+        flex: 1;
+    }
+
+    .customer-block .label {
+        font-size: 9pt;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    .customer-block .name {
+        font-size: 13pt;
+        font-weight: 600;
+    }
+
+    .customer-block .address,
+    .customer-block .contact-info {
+        font-size: 10pt;
+        color: #444;
+    }
+
+    .invoice-details {
+        text-align: right;
+        font-size: 10pt;
+    }
+
+    .invoice-details .detail-label {
+        color: #888;
+        font-size: 9pt;
+    }
+
+    .invoice-details .detail-value {
+        font-weight: 500;
+        margin-bottom: 6px;
+    }
+
+    table.items {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 8px;
+        font-size: 10pt;
+    }
+
+    table.items thead th {
+        background: #f5f5f5;
+        padding: 6px 10px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 9pt;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        color: #555;
+        border-bottom: 1px solid #ddd;
+    }
+
+    table.items thead th.num {
+        text-align: right;
+    }
+
+    table.items tbody td {
+        padding: 6px 10px;
+        border-bottom: 1px solid #eee;
+        vertical-align: top;
+    }
+
+    table.items tbody td.num {
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    table.items .item-body {
+        font-size: 9pt;
+        color: #666;
+        margin-top: 2px;
+        line-height: 1.4;
+    }
+
+    .ql-size-small { font-size: 0.75em; }
+    .ql-size-large { font-size: 1.5em; }
+    .ql-size-huge { font-size: 2em; }
+
+    .co-badge {
+        display: inline-block;
+        background: #f0f0f0;
+        color: #666;
+        font-size: 8pt;
+        padding: 1px 6px;
+        border-radius: 3px;
+        margin-left: 6px;
+        font-weight: 600;
+    }
+
+    .totals-block {
+        margin-top: 24px;
+        margin-left: auto;
+        width: 280px;
+    }
+
+    .totals-block table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .totals-block td {
+        padding: 5px 10px;
+        font-size: 10pt;
+    }
+
+    .totals-block td.label {
+        text-align: left;
+        color: #555;
+    }
+
+    .totals-block td.value {
+        text-align: right;
+        font-weight: 500;
+    }
+
+    .totals-block .total-row td {
+        font-size: 13pt;
+        font-weight: 700;
+        border-top: 2px solid #1a1a1a;
+        padding-top: 8px;
+        color: #1a1a1a;
+    }
+
+    .totals-block .balance-row td {
+        font-size: 12pt;
+        font-weight: 700;
+        color: #b45309;
+    }
+
+    .notes-section {
+        margin-top: 30px;
+        padding-top: 16px;
+        border-top: 1px solid #ddd;
+    }
+
+    .notes-section h3 {
+        font-size: 12pt;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .notes-section .note-content {
+        font-size: 10pt;
+        color: #444;
+        line-height: 1.6;
+    }
+
+    .footer {
+        margin-top: 40px;
+        text-align: center;
+        font-size: 9pt;
+        color: #888;
+        padding-top: 12px;
+        border-top: 1px solid #eee;
+    }
+
+    .footer .thanks {
+        font-size: 10pt;
+        color: #555;
+        margin-bottom: 4px;
+    }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="header-logo">
+        {% if logo_data_uri %}
+        <img src="{{ logo_data_uri }}" alt="{{ company_name }}">
+        {% endif %}
+    </div>
+    <div class="header-company">
+        <div class="company-name">{{ company_name }}</div>
+        <div>{{ company_address }}</div>
+        <div>{{ company_phone }}</div>
+        <div>{{ company_email }}</div>
+    </div>
+</div>
+
+<!-- INVOICE INFO BAR -->
+<div class="info-bar">
+    <div>
+        <span class="invoice-label">{{ invoice_number }}</span>
+        {% if date_invoiced %}
+        <span class="invoice-date">&nbsp;&mdash;&nbsp;{{ date_invoiced.strftime('%B %d, %Y') if date_invoiced else '' }}</span>
+        {% endif %}
+    </div>
+    <div>
+        <span class="invoice-badge">Invoice</span>
+    </div>
+</div>
+
+<!-- CUSTOMER + INVOICE DETAILS -->
+<div class="details-row">
+    <div class="customer-block">
+        <div class="label">Bill To</div>
+        {% if contact_name %}
+        <div class="name">{{ contact_name }}</div>
+        {% endif %}
+        {% if job_address %}
+        <div class="address">{{ job_address }}</div>
+        {% endif %}
+        {% if contact_email %}
+        <div class="contact-info">{{ contact_email }}</div>
+        {% endif %}
+        {% if contact_phone %}
+        <div class="contact-info">{{ contact_phone }}</div>
+        {% endif %}
+    </div>
+    <div class="invoice-details">
+        {% if date_invoiced %}
+        <div class="detail-label">Date Invoiced</div>
+        <div class="detail-value">{{ date_invoiced.strftime('%B %d, %Y') }}</div>
+        {% endif %}
+        {% if due_date %}
+        <div class="detail-label">Due Date</div>
+        <div class="detail-value">{{ due_date.strftime('%B %d, %Y') }}</div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- LINE ITEMS -->
+<table class="items">
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th class="num">Qty</th>
+            <th class="num">Unit Price</th>
+            <th class="num">Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>
+                {{ item.description or '' }}
+                {% if item.source_type == 'change_order' and item.source_co_number %}
+                <span class="co-badge">CO #{{ item.source_co_number }}</span>
+                {% endif %}
+                {% if item.body %}
+                <div class="item-body">{{ item.body | safe }}</div>
+                {% endif %}
+            </td>
+            <td class="num">{% if item.qty %}{% if item.qty | float == item.qty | float | int %}{{ item.qty | float | int }}{% else %}{{ item.qty }}{% endif %}{% endif %}</td>
+            <td class="num">{% if item.unit_price %}${{ "{:,.2f}".format(item.unit_price | float) }}{% endif %}</td>
+            <td class="num">{% if item.line_total %}${{ "{:,.2f}".format(item.line_total | float) }}{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- TOTALS -->
+<div class="totals-block">
+    <table>
+        <tr>
+            <td class="label">Subtotal</td>
+            <td class="value">${{ "{:,.2f}".format(subtotal | float) }}</td>
+        </tr>
+        {% if tax_rate and tax_rate > 0 %}
+        <tr>
+            <td class="label">Tax ({{ tax_rate_pct }}%)</td>
+            <td class="value">${{ "{:,.2f}".format(tax_amount | float) }}</td>
+        </tr>
+        {% elif tax_amount is not none and tax_amount == 0 and (tax_rate is none or tax_rate == 0) %}
+        <tr>
+            <td class="label">Tax</td>
+            <td class="value">N/A</td>
+        </tr>
+        {% endif %}
+        {% for credit in credits %}
+        <tr>
+            <td class="label">{{ credit.description }}</td>
+            <td class="value">-${{ "{:,.2f}".format(-(credit.line_total | float)) }}</td>
+        </tr>
+        {% endfor %}
+        <tr class="total-row">
+            <td class="label">Total</td>
+            <td class="value">${{ "{:,.2f}".format(total | float) }}</td>
+        </tr>
+        <tr>
+            <td class="label">Amount Paid</td>
+            <td class="value">${{ "{:,.2f}".format(amount_paid | float) }}</td>
+        </tr>
+        <tr class="balance-row">
+            <td class="label">Balance Due</td>
+            <td class="value">${{ "{:,.2f}".format(balance | float) }}</td>
+        </tr>
+    </table>
+</div>
+
+<!-- NOTES -->
+{% if notes %}
+<div class="notes-section">
+    <h3>Notes</h3>
+    <div class="note-content">{{ notes }}</div>
+</div>
+{% endif %}
+
+<!-- FOOTER -->
+<div class="footer">
+    <div class="thanks">Thank you for your business.</div>
+    <div>{{ company_name }}</div>
+</div>
+
+</body>
+</html>

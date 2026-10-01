@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"></head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; color:#1a1a1a; line-height:1.5; padding:24px; max-width:600px; margin:0 auto;">
+
+<h2 style="margin:0 0 16px 0; font-size:16pt;">{{ wo_number }}</h2>
+
+<p style="margin:0 0 12px 0;">
+    Attached is the work order for the job at
+    <strong>{{ job_address or 'the scheduled property' }}</strong>.
+</p>
+
+{% if message %}
+<p style="margin:0 0 12px 0; padding:12px; background:#f5f5f5; border-radius:4px;">
+    {{ message }}
+</p>
+{% endif %}
+
+{% if secret %}
+<p style="margin:0 0 12px 0; font-size:9pt; color:#6a3a00; background:#fff4e5; padding:8px 12px; border-radius:4px;">
+    This is the <strong>secret</strong> work order — customer contact info has been redacted.
+</p>
+{% endif %}
+
+<p style="margin:16px 0 0 0; font-size:10pt; color:#555;">
+    Questions? Reply to this email or call {{ company_phone }}.
+</p>
+
+<p style="margin:24px 0 0 0; font-size:10pt; color:#888;">
+    &mdash; {{ company_name }}
+</p>
+
+</body>
+</html>

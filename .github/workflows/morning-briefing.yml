@@ -1,0 +1,110 @@
+name: Morning Briefing
+
+# Sends Dale's daily briefing email via the CRM /api/admin/briefing/send
+# endpoint. Authenticates via /api/auth/login with credentials stored in
+# repo secrets.
+#
+# Schedule: 11:55 UTC daily.
+#   * In EST (Nov-Mar): arrives at 6:55am ET
+#   * In EDT (Mar-Nov): arrives at 7:55am ET
+#   GitHub Actions cron is UTC-only and does NOT auto-adjust for DST.
+#   To hit 6:55am ET year-round you'd need two crons or a small DST shim.
+#
+# Required repo secrets:
+#   CRM_BASE_URL — e.g. https://your-app.azurewebsites.net
+#   CRM_USERNAME — admin user email
+#   CRM_PASSWORD — admin user password
+
+# Public copy: the daily schedule is disabled so forks do not fire a failing job.
+# To run it on your own deployment, restore:
+#   schedule:
+#     - cron: '55 11 * * *'
+on:
+  workflow_dispatch: {}
+
+jobs:
+  send-briefing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Send Dale briefing
+        env:
+          CRM_BASE_URL: ${{ secrets.CRM_BASE_URL }}
+          CRM_USERNAME: ${{ secrets.CRM_USERNAME }}
+          CRM_PASSWORD: ${{ secrets.CRM_PASSWORD }}
+        run: |
+          python3 <<'PY'
+          import json
+          import os
+          import sys
+          import urllib.request
+          import urllib.error
+
+          base = os.environ["CRM_BASE_URL"].rstrip("/")
+          username = os.environ["CRM_USERNAME"]
+          password = os.environ["CRM_PASSWORD"]
+
+          if not (base and username and password):
+              print("ERROR: one of CRM_BASE_URL/CRM_USERNAME/CRM_PASSWORD is empty", file=sys.stderr)
+              sys.exit(1)
+
+          # 0. Warm up the Azure B1 container (cold starts can exceed 30s)
+          import time
+          health_url = f"{base}/api/health"
+          for attempt in range(1, 4):
+              try:
+                  with urllib.request.urlopen(health_url, timeout=90) as resp:
+                      print(f"warm-up: /api/health returned {resp.status} on attempt {attempt}")
+                      break
+              except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError) as e:
+                  print(f"warm-up attempt {attempt} failed: {e}", file=sys.stderr)
+                  if attempt < 3:
+                      time.sleep(10)
+
+          # 1. Log in to obtain a JWT
+          login_body = json.dumps({"email": username, "password": password}).encode()
+          login_req = urllib.request.Request(
+              f"{base}/api/auth/login",
+              data=login_body,
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+          try:
+              with urllib.request.urlopen(login_req, timeout=60) as resp:
+                  login_data = json.load(resp)
+          except urllib.error.HTTPError as e:
+              print(f"ERROR: login failed with HTTP {e.code}: {e.read().decode(errors='replace')}", file=sys.stderr)
+              sys.exit(1)
+
+          token = login_data.get("access_token")
+          if not token:
+              print(f"ERROR: login response missing access_token: {login_data}", file=sys.stderr)
+              sys.exit(1)
+
+          # 2. Trigger Dale's briefing (real send, not dry-run)
+          send_body = json.dumps({"recipient": "dale", "dry_run": False}).encode()
+          send_req = urllib.request.Request(
+              f"{base}/api/admin/briefing/send",
+              data=send_body,
+              headers={
+                  "Authorization": f"Bearer {token}",
+                  "Content-Type": "application/json",
+              },
+              method="POST",
+          )
+          try:
+              with urllib.request.urlopen(send_req, timeout=120) as resp:
+                  result = json.load(resp)
+          except urllib.error.HTTPError as e:
+              print(f"ERROR: send failed with HTTP {e.code}: {e.read().decode(errors='replace')}", file=sys.stderr)
+              sys.exit(1)
+
+          print(json.dumps(result, indent=2))
+
+          if not result.get("sent_to"):
+              skipped = result.get("skipped", [])
+              print(f"ERROR: briefing was not sent; skipped={skipped}", file=sys.stderr)
+              sys.exit(1)
+
+          print(f"Sent to: {result['sent_to']}")
+          PY

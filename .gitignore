@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+.pytest_cache/
+test.db
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Environment variables
+.env
+
+# Node
+node_modules/
+frontend/node_modules/
+
+# Build output
+frontend/dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.log
+
+# Client PII exports (AccuLynx, DripJobs, etc.) — keep out of git
+data/Contacts Report*.csv
+data/Jobs Report*.csv
+
+# Public copy: never commit real exports, dumps, or local demo databases
+data/*Report*.csv
+data/*.xlsx
+backups/
+db_backups/*
+!db_backups/.gitignore
+*.dump
+demo.db
+*.db
